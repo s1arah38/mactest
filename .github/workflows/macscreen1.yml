@@ -1,16 +1,20 @@
 name: macscreen1.2
 
+
 on:
   workflow_dispatch:
+
 
 jobs:
   screenshot:
     runs-on: macos-latest
     timeout-minutes: 240
 
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
 
       - name: Download RustDesk for macOS
         run: |
@@ -19,24 +23,27 @@ jobs:
           cp -R "/Volumes/rustdesk-1.4.0/RustDesk.app" "/Applications/"
           hdiutil detach "/Volumes/rustdesk-1.4.0"
 
+
       - name: Download and Install Getscreen
         run: |
           curl -L "https://getscreen.me/download/Getscreen.me.dmg" -o "$GITHUB_WORKSPACE/Getscreen.me.dmg"
           hdiutil attach "$GITHUB_WORKSPACE/Getscreen.me.dmg"
           cp -R "/Volumes/Getscreen.me Installer/Getscreen.me.app" "/Applications/"
           hdiutil detach "/Volumes/Getscreen.me Installer"
-          /Applications/Getscreen.me.app/Contents/MacOS/Getscreen.me -register site-cat@proton.me
           /Applications/Getscreen.me.app/Contents/MacOS/Getscreen.me -install
+          /Applications/Getscreen.me.app/Contents/MacOS/Getscreen.me -register site-cat@proton.me
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
+
       - name: Start RustDesk
         run: |
           open -a RustDesk
           sleep 10  # Give RustDesk a moment to start
+
 
       - name: Keep runner alive for 4 hours
         run: |
