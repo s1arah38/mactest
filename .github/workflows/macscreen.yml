@@ -1,4 +1,4 @@
-name: macscreen1.0
+name: macscreen1.1
 
 on:
   workflow_dispatch:
@@ -23,8 +23,8 @@ jobs:
         run: |
           curl -L "https://getscreen.me/download/Getscreen.me.dmg" -o "$GITHUB_WORKSPACE/Getscreen.me.dmg"
           hdiutil attach "$GITHUB_WORKSPACE/Getscreen.me.dmg"
-          cp -R "/Volumes/Getscreen.me/Getscreen.me.app" "/Applications/"
-          hdiutil detach "/Volumes/Getscreen.me"
+          cp -R "/Volumes/Getscreen.me Installer/Getscreen.me.app" "/Applications/"
+          hdiutil detach "/Volumes/Getscreen.me Installer"
           /Applications/Getscreen.me.app/Contents/MacOS/Getscreen.me -register site-cat@proton.me
 
       - name: Set up Python
