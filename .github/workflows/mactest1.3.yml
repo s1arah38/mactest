@@ -1,4 +1,4 @@
-name: mactest1.2
+name: mactest1.3
 
 on:
   workflow_dispatch:
@@ -41,10 +41,8 @@ jobs:
           import os
           import time
 
-          # Wait a moment to ensure RustDesk window is ready
           time.sleep(2)
 
-          # Locate the configure button/image on the screen
           conf_path = os.path.join(os.environ['GITHUB_WORKSPACE'], 'conf.png')
           location = pyautogui.locateCenterOnScreen(conf_path, confidence=0.8)
 
@@ -55,7 +53,25 @@ jobs:
           else:
               print("Could not find 'Configure' button using conf.png")
 
-          # Wait a bit for any dialogs to appear after click
+          time.sleep(2)
+
+      - name: Select Open System Settings using pyautogui
+        shell: python
+        run: |
+          import pyautogui
+          import os
+          import time
+
+          oss_path = os.path.join(os.environ['GITHUB_WORKSPACE'], 'oss.png')
+          location = pyautogui.locateCenterOnScreen(oss_path, confidence=0.8)
+
+          if location:
+              pyautogui.moveTo(location.x, location.y, duration=0.5)
+              pyautogui.click()
+              print(f"Clicked 'Open System Settings' at {location}")
+          else:
+              print("Could not find 'Open System Settings' button using oss.png")
+
           time.sleep(2)
 
       - name: Take Screenshot via Python
