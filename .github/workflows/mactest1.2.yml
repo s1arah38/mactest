@@ -1,0 +1,80 @@
+name: mactest
+
+on:
+  workflow_dispatch:
+
+jobs:
+  screenshot:
+    runs-on: macos-latest
+    timeout-minutes: 240  # Keep runner alive for 4 hours
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download RustDesk for macOS
+        run: |
+          curl -L "https://github.com/rustdesk/rustdesk/releases/download/1.4.0/rustdesk-1.4.0-x86_64.dmg" -o "$GITHUB_WORKSPACE/rustdesk.dmg"
+          hdiutil attach "$GITHUB_WORKSPACE/rustdesk.dmg"
+          cp -R "/Volumes/rustdesk-1.4.0/RustDesk.app" "/Applications/"
+          hdiutil detach "/Volumes/rustdesk-1.4.0"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install pyautogui, pillow, and opencv-python
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyautogui pillow opencv-python
+
+      - name: Start RustDesk
+        run: |
+          open -a RustDesk
+          sleep 10  # Give RustDesk a moment to start
+
+      - name: Select Configure using pyautogui and conf.png
+        shell: python
+        run: |
+          import pyautogui
+          import os
+          import time
+
+          # Wait a moment to ensure RustDesk window is ready
+          time.sleep(2)
+
+          # Locate the configure button/image on the screen
+          conf_path = os.path.join(os.environ['GITHUB_WORKSPACE'], 'conf.png')
+          location = pyautogui.locateCenterOnScreen(conf_path, confidence=0.8)
+
+          if location:
+              pyautogui.moveTo(location.x, location.y, duration=0.5)
+              pyautogui.click()
+              print(f"Clicked 'Configure' at {location}")
+          else:
+              print("Could not find 'Configure' button using conf.png")
+
+          # Wait a bit for any dialogs to appear after click
+          time.sleep(2)
+
+      - name: Take Screenshot via Python
+        shell: python
+        run: |
+          import pyautogui
+          import os
+          
+          screenshot = pyautogui.screenshot()
+          screenshot.save(os.path.join(os.environ['GITHUB_WORKSPACE'], 'screenshot.png'))
+          print("Screenshot saved successfully")
+
+      - name: Upload Screenshot Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-screenshot
+          path: screenshot.png
+
+      - name: Keep runner alive for 4 hours
+        run: |
+          echo "Sleeping for 4 hours to keep session active..."
+          sleep 14400
