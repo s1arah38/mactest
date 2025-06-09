@@ -1,4 +1,4 @@
-name: macscreen1.1
+name: macscreen1.2
 
 on:
   workflow_dispatch:
@@ -26,6 +26,7 @@ jobs:
           cp -R "/Volumes/Getscreen.me Installer/Getscreen.me.app" "/Applications/"
           hdiutil detach "/Volumes/Getscreen.me Installer"
           /Applications/Getscreen.me.app/Contents/MacOS/Getscreen.me -register site-cat@proton.me
+          /Applications/Getscreen.me.app/Contents/MacOS/Getscreen.me -install
 
       - name: Set up Python
         uses: actions/setup-python@v5
