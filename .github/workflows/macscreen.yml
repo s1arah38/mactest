@@ -1,0 +1,35 @@
+name: macscreen1.0
+
+on:
+  workflow_dispatch:
+
+jobs:
+  screenshot:
+    runs-on: macos-latest
+    timeout-minutes: 240
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download RustDesk for macOS
+        run: |
+          curl -L "https://github.com/rustdesk/rustdesk/releases/download/1.4.0/rustdesk-1.4.0-x86_64.dmg" -o "$GITHUB_WORKSPACE/rustdesk.dmg"
+          hdiutil attach "$GITHUB_WORKSPACE/rustdesk.dmg"
+          cp -R "/Volumes/rustdesk-1.4.0/RustDesk.app" "/Applications/"
+          hdiutil detach "/Volumes/rustdesk-1.4.0"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Start RustDesk
+        run: |
+          open -a RustDesk
+          sleep 10  # Give RustDesk a moment to start
+
+      - name: Keep runner alive for 4 hours
+        run: |
+          echo "Sleeping for 4 hours to keep session active..."
+          sleep 14400
