@@ -1,4 +1,4 @@
-name: mactest
+name: mactest1.2
 
 on:
   workflow_dispatch:
